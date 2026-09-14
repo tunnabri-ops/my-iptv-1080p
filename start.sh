@@ -2,25 +2,25 @@
 
 mkdir -p /app/live
 
-# বাংলাদেশ টাইমজোন সেট
+# বাংলাদেশ টাইমজোন
 export TZ="Asia/Dhaka"
 
-# লোগো ডাউনলোড
-wget -q -O /app/maxtv.jpg "https://static.wikia.nocookie.net/logopedia/images/4/4d/Maxtv.jpg"
+# লোগো নিরাপদ ডাউনলোড (ব্যর্থ হলেও ক্র্যাশ করবে না)
+curl -k -s -L "https://static.wikia.nocookie.net/logopedia/images/4/4d/Maxtv.jpg" -o /app/maxtv.jpg || true
 
-# Nginx স্টার্ট
+# Nginx ব্যাকগ্রাউন্ডে স্টার্ট
 nginx
 
-# সময় টিভির মতো রিয়েল-টাইম লাইভ ঘড়ি + লোগো
+# ক্র্যাশ-প্রুফ ড্রটেক্সট ও লোগো স্ট্রিমিং
 ffmpeg -re \
   -f concat -safe 0 -protocol_whitelist file,http,https,tcp,tls -stream_loop -1 -i /app/playlist.txt \
-  -i /app/maxtv.jpg \
+  -loop 1 -i /app/maxtv.jpg \
   -filter_complex \
   "[0:v]scale=1280:720,fps=25[base]; \
-   [1:v]scale=120:-1[logo]; \
-   [base]drawbox=x=W-135:y=H-105:w=135:h=30:color=black@0.7:t=fill, \
-   drawtext=fontfile=/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf:text='%{localtime\:%I\:%M\:%S %p}':fontcolor=white:fontsize=15:x=W-125:y=H-98[base_time]; \
-   [base_time][logo]overlay=W-w-10:H-h-15[v_out]" \
+   [1:v]scale=110:-1[logo]; \
+   [base]drawbox=x=W-135:y=H-95:w=135:h=26:color=black@0.7:t=fill, \
+   drawtext=text='%{localtime\:%I\:%M\:%S %p}':fontcolor=white:fontsize=16:x=W-125:y=H-90[base_time]; \
+   [base_time][logo]overlay=W-w-15:H-h-15:shortest=1[v_out]" \
   -map "[v_out]" -map 0:a:0 \
   -c:v libx264 -preset ultrafast -tune zerolatency -crf 28 -g 50 -keyint_min 50 -sc_threshold 0 -threads 2 \
   -c:a aac -b:a 96k -ar 44100 \
