@@ -1,11 +1,14 @@
-FROM alpine:latest
+FROM alpine:edge
 
 RUN apk update && apk add --no-cache \
     ffmpeg \
     nginx \
-    curl
+    curl \
+    bash
 
 RUN mkdir -p /app/live /run/nginx
+
+WORKDIR /app
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY playlist.txt /app/playlist.txt
