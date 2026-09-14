@@ -5,7 +5,7 @@ mkdir -p /app/live
 # Nginx স্টার্ট
 nginx
 
-# পিওর ও স্মুথ স্ট্রিমিং (জিরো বাফারিং, নো লোগো/টাইম)
+# পিওর স্মুথ লাইভ স্ট্রিমিং
 ffmpeg -re \
   -f concat -safe 0 -protocol_whitelist file,http,https,tcp,tls -stream_loop -1 -i /app/playlist.txt \
   -vf "scale=1280:720,fps=25" \
