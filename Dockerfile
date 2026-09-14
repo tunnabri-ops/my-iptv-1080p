@@ -3,10 +3,9 @@ FROM alpine:latest
 RUN apk update && apk add --no-cache \
     ffmpeg \
     nginx \
-    wget \
-    ttf-dejavu
+    curl
 
-WORKDIR /app
+RUN mkdir -p /app/live /run/nginx
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY playlist.txt /app/playlist.txt
